@@ -54,7 +54,7 @@ class TileMap:
         return player.rect.colliderect(tile.rect)
 
     def collisions(self, surface):
-        player_collision_rect = pg.Rect(player.x, player.y, player.width * 4, player.height * 2.5)
+        player_collision_rect = pg.Rect(player.x, player.y, player.width * 3, player.height * 2)
         player_collision_rect.center = player.x + player.width / 2,player.y + player.height / 2
 
         for tile in self.tiles.sprites():

@@ -39,7 +39,7 @@ while running:
 
     player.main(screen)
 
-    placeholder_tilemap.main(screen)
+    testinggrounds.main(screen)
 
     enemies.update(player)
     enemies.draw(screen)

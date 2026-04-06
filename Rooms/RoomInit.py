@@ -4,10 +4,10 @@ from TilemapClass import *
 from Tilemap import *
 
 
-placeholder_tile_colors = {
+testinggrounds_colors = {
     0: (135, 206, 235),
     1: (100,0,100),
     2: (200,0,200)
 }
 
-placeholder_tilemap = TileMap(128, placeholder_tilemap_tilemap, placeholder_tile_colors)
+testinggrounds = TileMap(128, testinggrounds_map, testinggrounds_colors)

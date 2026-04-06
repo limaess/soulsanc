@@ -97,10 +97,10 @@ class Player:
         pg.draw.rect(surface, (0,0,0), (self.rect), 3)
 
 
-        # pg.draw.rect(surface, (self.up_colors), (self.collide_rectUP))
-        # pg.draw.rect(surface, (self.down_colors), (self.collide_rectDOWN))
-        # pg.draw.rect(surface, (self.left_colors), (self.collide_rectLEFT))
-        # pg.draw.rect(surface, (self.right_colors), (self.collide_rectRIGHT))
+        pg.draw.rect(surface, (self.up_colors), (self.collide_rectUP))
+        pg.draw.rect(surface, (self.down_colors), (self.collide_rectDOWN))
+        pg.draw.rect(surface, (self.left_colors), (self.collide_rectLEFT))
+        pg.draw.rect(surface, (self.right_colors), (self.collide_rectRIGHT))
 
     def limits(self):
         self.rect.x = max(0, min(self.x, 1920 - self.rect.width))
