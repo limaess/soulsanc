@@ -1,10 +1,4 @@
 import pygame as pg
-import os
-import sys
-
-folder_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-room_path = os.path.join(folder_path, 'Rooms')
-sys.path.insert(0, room_path)
 
 from TilemapClass import *
 from Tilemap import *

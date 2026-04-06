@@ -18,7 +18,6 @@ class Tile(pg.sprite.Sprite):
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
-        pg.draw.rect(surface, (0,0,0), (self.rect), 3)
 
 class TileMap:
     def __init__(self, tile_size, tile_map, tile_colors):
@@ -54,17 +53,24 @@ class TileMap:
     def collideplayer(self, tile):
         return player.rect.colliderect(tile.rect)
 
-    def collisions(self):
-       for tile in self.tiles.sprites():
-        if self.collideplayer(tile):
-            if self.collideright(tile):
-                player.x = tile.rect.right
-            if self.collideleft(tile):
-                player.x = tile.rect.left - player.width
-            if self.collidebottom(tile):
-                player.y = tile.rect.bottom
-            if self.collidetop(tile):
-                player.y = tile.rect.top - player.height
+    def collisions(self, surface):
+        player_collision_rect = pg.Rect(player.x, player.y, player.width * 4, player.height * 2.5)
+        player_collision_rect.center = player.x + player.width / 2,player.y + player.height / 2
+
+        for tile in self.tiles.sprites():
+            if player_collision_rect.colliderect(tile.rect):
+                if self.collideplayer(tile):
+                    if self.collideright(tile):
+                        player.x = tile.rect.right
+                    if self.collideleft(tile):
+                        player.x = tile.rect.left - player.width
+                    if self.collidebottom(tile):
+                        player.y = tile.rect.bottom
+                    if self.collidetop(tile):
+                       player.y = tile.rect.top - player.height
+
+        pg.draw.rect(surface, (0,255,255), (player_collision_rect), 3)
+            
     def main(self, surface):
         self.draw(surface)
-        self.collisions()
+        self.collisions(surface)

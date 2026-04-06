@@ -52,11 +52,6 @@ class Player:
         self.up_vel = 0
         self.down_vel = 0
 
-        # self.x_vel = 3.2
-        # self.y_vel = 3.2
-
-        self.on_ground = True
-
         self.def_yvel = 0
 
     def movement(self):
@@ -99,14 +94,21 @@ class Player:
         self.collide_rectLEFT.center = (self.x - self.width // 2), self.y + self.height // 2
 
         pg.draw.rect(surface, (200,100,255), (self.rect))
+        pg.draw.rect(surface, (0,0,0), (self.rect), 3)
+
 
         # pg.draw.rect(surface, (self.up_colors), (self.collide_rectUP))
         # pg.draw.rect(surface, (self.down_colors), (self.collide_rectDOWN))
         # pg.draw.rect(surface, (self.left_colors), (self.collide_rectLEFT))
         # pg.draw.rect(surface, (self.right_colors), (self.collide_rectRIGHT))
 
+    def limits(self):
+        self.rect.x = max(0, min(self.x, 1920 - self.rect.width))
+        self.rect.y = max(0, min(self.y, 1080 - self.rect.height))
+
     def main(self, surface):
         self.movement()
+        self.limits()
 
         self.draw(surface)
         
