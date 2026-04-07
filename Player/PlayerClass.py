@@ -39,6 +39,8 @@ class Player:
         self.collide_rectRIGHT = pg.Rect((x + width * 2), y + height // 3, height , height // 1.2)
         self.collide_rectLEFT = pg.Rect((x - width * 2), y + height // 3, height, height // 1.2)
 
+        self.collision_rect = pg.Rect(x + width / 2, y + height / 2, width * 3, height * 2)
+
         self.left_colors = (255,0,0)
         self.right_colors = (255,0,0)
         self.down_colors = (255,0,0)
@@ -48,12 +50,8 @@ class Player:
 
         self.left_vel = 0
         self.right_vel = 0
-
         self.up_vel = 0
         self.down_vel = 0
-
-        self.def_yvel = 0
-
     def movement(self):
         self.x -= self.left_vel
         self.x += self.right_vel
@@ -93,8 +91,12 @@ class Player:
         self.collide_rectRIGHT.center = (self.x + self.width * 1.5), self.y + self.height // 2
         self.collide_rectLEFT.center = (self.x - self.width // 2), self.y + self.height // 2
 
+        self.collision_rect.center = self.x + self.width / 2, self.y + self.height / 2
+
         pg.draw.rect(surface, (200,100,255), (self.rect))
         pg.draw.rect(surface, (0,0,0), (self.rect), 3)
+
+        pg.draw.rect(surface, (100,255,255), (self.collision_rect), 3)
 
         # pg.draw.rect(surface, (self.up_colors), (self.collide_rectUP))
         # pg.draw.rect(surface, (self.down_colors), (self.collide_rectDOWN))

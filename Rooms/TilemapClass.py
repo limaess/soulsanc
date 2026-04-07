@@ -13,11 +13,34 @@ class Tile(pg.sprite.Sprite):
     def __init__(self, x, y, width, height, color):
         super().__init__()
         self.rect = pg.Rect(x, y, width, height)
-        self.image = pg.Surface((width, height))
+        self.image = pg.Surface((width, height)).convert()
         self.image.fill(color)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+
+    def collideright(self):
+        return player.collide_rectLEFT.colliderect(self.rect)
+    def collideleft(self):
+        return player.collide_rectRIGHT.colliderect(self.rect)
+    def collidebottom(self):
+        return player.collide_rectUP.colliderect(self.rect)
+    def collidetop(self):
+        return player.collide_rectDOWN.colliderect(self.rect)
+    
+    def collideplayer(self):
+        return player.rect.colliderect(self.rect)
+
+    def collisions(self):
+        if self.collideplayer():
+            if self.collideright():
+                player.x = self.rect.right
+            if self.collideleft():
+                player.x = self.rect.left - player.width
+            if self.collidebottom():
+                player.y = self.rect.bottom
+            if self.collidetop():
+               player.y = self.rect.top - player.height
 
 class TileMap:
     def __init__(self, tile_size, tile_map, tile_colors):
@@ -28,7 +51,9 @@ class TileMap:
 
         self.tile_colors = tile_colors
 
-    def draw(self, surface):
+        self.created_tiles = False
+
+    def create_tiles(self):
         for row in range(len(self.tile_map)):
             for col in range(len(self.tile_map[row])):
                 tile_type = self.tile_map[row][col]
@@ -38,39 +63,16 @@ class TileMap:
                     y = row * self.tile_size
                     color = self.tile_colors[tile_type]
                     tile = Tile(x, y, self.tile_size, self.tile_size, color)
-                    tile.draw(surface)
                     self.tiles.add(tile)
+        self.created_tiles = True
 
-    def collideright(self, tile):
-        return player.collide_rectLEFT.colliderect(tile.rect)
-    def collideleft(self, tile):
-        return player.collide_rectRIGHT.colliderect(tile.rect)
-    def collidebottom(self, tile):
-        return player.collide_rectUP.colliderect(tile.rect)
-    def collidetop(self, tile):
-        return player.collide_rectDOWN.colliderect(tile.rect)
-    
-    def collideplayer(self, tile):
-        return player.rect.colliderect(tile.rect)
+    def draw(self, surface):
+        self.tiles.draw(surface)
 
-    def collisions(self, surface):
-        player_collision_rect = pg.Rect(player.x, player.y, player.width * 3, player.height * 2)
-        player_collision_rect.center = player.x + player.width / 2,player.y + player.height / 2
+    def update(self):
+        if not self.created_tiles:
+            self.create_tiles()
 
-        for tile in self.tiles.sprites():
-            if player_collision_rect.colliderect(tile.rect):
-                if self.collideplayer(tile):
-                    if self.collideright(tile):
-                        player.x = tile.rect.right
-                    if self.collideleft(tile):
-                        player.x = tile.rect.left - player.width
-                    if self.collidebottom(tile):
-                        player.y = tile.rect.bottom
-                    if self.collidetop(tile):
-                       player.y = tile.rect.top - player.height
-
-        pg.draw.rect(surface, (0,255,255), (player_collision_rect), 3)
-            
-    def main(self, surface):
-        self.draw(surface)
-        self.collisions(surface)
+        for tile in self.tiles:
+            if player.collision_rect.colliderect(tile.rect):
+                tile.collisions()

@@ -1,6 +1,9 @@
 import pygame as pg
 import random
 
+import cProfile as cpr
+import re
+
 from PlayerClass import player
 
 class Enemy(pg.sprite.Sprite):
@@ -101,16 +104,18 @@ class Enemy(pg.sprite.Sprite):
         self.x -= self.x_vel
         self.y -= self.y_vel
 
+        wanderaccel = 0.01 + self.accel / 2 
+
         self.randomness()
 
         if self.x > self.target_x:
-            self.x_vel += 0.03
+            self.x_vel += wanderaccel
         if self.x < self.target_x:
-            self.x_vel -= 0.03
+            self.x_vel -= wanderaccel
         if self.y > self.target_y:
-            self.y_vel += 0.03
+            self.y_vel += wanderaccel
         if self.y < self.target_y:
-            self.y_vel -= 0.03
+            self.y_vel -= wanderaccel
 
         self.target_gen()
 
@@ -138,21 +143,5 @@ class Enemy(pg.sprite.Sprite):
     def draw_sight(self, surface):
         pg.draw.rect(surface, (0,200,50), self.sight_rect, 3)
         pg.draw.rect(surface, (0,255,0), (self.target_x, self.target_y, 50, 50))
-
-enemies = pg.sprite.Group()
-
-default_enemy = Enemy('bad guy', (255,0,10), 500, 100, 200, 250, 0, 0, 0.04, 3, 850, 1000)
-quick_enemy = Enemy('gay guy', (0,100,255), 500, 400, 150, 200, 0, 0, 0.05, 3.3, 700, 800)
-
-colorful_enemy = Enemy('this guy', (random.randint(0,255),random.randint(0,255),random.randint(0,255)), 900,900, 190,210, 0,0, 0.06, 3.4, 700, 900)
-
-really_fast_guy = Enemy('fast guy', (200, 50, 50), 0,0, 100, 130, 0,0, 0.07, 4, 500, 750)
-
-big_enemy = Enemy('big fat guy', (200,100,30), 0,0, 300,370, 0,0, 0.03, 2.7, 1000, 1200)
-
-OH_MY_GOD = Enemy('THE DEVIL', (255,0,0), 0,0, 300, 400, 0,0, 0.1, 6.66, 900, 200)
-WHAT_THE_FUCK = Enemy('THE JEVIL', (70,20,170), 0,0, 100,150, 0,0, 0.3, 7.77, 600, 100)
-
-enemy_choice_list = [default_enemy, quick_enemy, colorful_enemy, really_fast_guy, big_enemy, OH_MY_GOD, WHAT_THE_FUCK]
 
 # enemies.add(default_enemy, quick_enemy)
