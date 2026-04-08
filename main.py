@@ -1,9 +1,6 @@
 import pygame as pg
 import random as r
 
-import cProfile as cpr
-import re
-
 import os,sys
 
 folder_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -20,6 +17,8 @@ from Player.EnemyInit import *
 
 from Rooms.RoomInit import *
 
+from DevTools import *
+
 pg.init()
 
 screen = pg.display.set_mode((1920, 1080))
@@ -32,30 +31,6 @@ def draw_text(text, font, text_color, x, y):
 font = pg.font.SysFont('Arial', 30)
 biggerfont = pg.font.SysFont('Arial', 50)
 
-cfg = None
-cfg_yourchoice = 0
-
-def enemy_choice(keys, cfg_yourchoice, thiserthis):
-    if keys[pg.K_q]:
-        cfg_yourchoice = (cfg_yourchoice - 1) % thiserthis
-    if keys[pg.K_e]:
-        cfg_yourchoice = (cfg_yourchoice + 1) % thiserthis
-
-def spawn_enemy(cfg_yourchoice):
-    cfg = enemy_choice_list[cfg_yourchoice]
-    if cfg:
-        enemy = Enemy(cfg.name, (cfg.color), 0,0, cfg.width, cfg.height, 0,0, cfg.accel, cfg.max_vel, cfg.lineofsight_size, cfg.target_change_cooldown)
-        enemy.x, enemy.y = mouse_pos 
-        enemies.add(enemy)
-    else:
-        print('choose an enemy')
-
-def clear_enemies():
-    enemies.empty()
-
-freeze_enemies = False
-drawsight = False
-
 running = True
 while running: 
     clock.tick(75)
@@ -66,37 +41,38 @@ while running:
         if event.type == pg.QUIT:
             running = False
         if event.type == pg.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                player.x, player.y = mouse_pos
-            if event.button == 3:
-                for enemy in enemies:
-                    enemy.target_x,enemy.target_y = mouse_pos 
-                    enemy.target_change_cooldown = 10000
+            onclick_tp(mouse_pos, event)
 
-    this = len(enemies)
-    thiserthis = len(enemy_choice_list)
+    enemies_len = len(enemies)
+    enemychoice_len = len(enemy_choice_list)
 
     keys = pg.key.get_just_pressed()
 
-    # enemy_choice(keys, cfg_yourchoice, thiserthis)
-
     if keys[pg.K_q]:
-        cfg_yourchoice = (cfg_yourchoice - 1) % thiserthis
+        enemy_choice_cfg = (enemy_choice_cfg - 1) % enemychoice_len
     if keys[pg.K_e]:
-        cfg_yourchoice = (cfg_yourchoice + 1) % thiserthis
+        enemy_choice_cfg = (enemy_choice_cfg + 1) % enemychoice_len
 
     if keys[pg.K_w]:
-        spawn_enemy(cfg_yourchoice)
+        cfg = enemy_choice_list[enemy_choice_cfg]
+        if cfg:
+            enemy = Enemy(cfg.name, (cfg.color), 0,0, cfg.width, cfg.height, 0,0, cfg.accel, cfg.max_vel, cfg.lineofsight_size, cfg.target_change_cooldown)
+            enemy.x, enemy.y = mouse_pos
+            enemies.add(enemy)
+        else:
+            print('choose an enemy')
+            
+    clear_enemies(keys)
+    stop_chasing(keys)
 
-    if keys[pg.K_z]:
-        clear_enemies()
+    enemy_cfg = enemy_choice_list[enemy_choice_cfg]
 
     if keys[pg.K_ESCAPE]:
         freeze_enemies = not freeze_enemies
     if keys[pg.K_1]:
         drawsight = not drawsight
 
-    if enemy_choice_list[cfg_yourchoice] == colorful_enemy:
+    if enemy_choice_list[enemy_choice_cfg] == colorful_enemy:
         colorful_enemy.color = random.randint(0,255),random.randint(0,255),random.randint(0,255)
 
     player.main(screen)
@@ -133,7 +109,7 @@ while running:
     draw_text('player ->', font, (255,255,255), player.x - 120, player.y + 15)
     draw_text(f'fps: {round(clock.get_fps())} ticks:{pg.time.get_ticks()} time:{clock.get_time()}', biggerfont, (255,255,255), 0,900)
 
-    draw_text(f'currently chosen enemy:\n{enemy_choice_list[cfg_yourchoice].name} -- {cfg_yourchoice + 1}', biggerfont, (enemy_choice_list[cfg_yourchoice].color), 0, 940)
+    draw_text(f'currently chosen enemy:\n{enemy_choice_list[enemy_choice_cfg].name} -- {enemy_choice_cfg + 1}', biggerfont, (enemy_choice_list[enemy_choice_cfg].color), 0, 940)
 
     pg.display.flip()
 pg.quit()

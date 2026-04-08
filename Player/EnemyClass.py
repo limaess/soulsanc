@@ -74,13 +74,13 @@ class Enemy(pg.sprite.Sprite):
 
     def randomness(self):
         # makes so the enemies are somewhat random?
-        self.x_vel += random.uniform(-0.005, 0.005) # so they feel more like
-        self.y_vel += random.uniform(-0.005, 0.005) # actual animals
+        self.x_vel += random.uniform(-0.05, 0.05) # so they feel more like
+        self.y_vel += random.uniform(-0.05, 0.05) # actual animals
 
         if random.random() < 0.1:
-            self.x_vel += random.uniform(-0.1, 0.1)
+            self.x_vel += random.uniform(-0.2, 0.2)
         if random.random() < 0.1:
-            self.y_vel += random.uniform(-0.1, 0.1)
+            self.y_vel += random.uniform(-0.2, 0.2)
     
     def chase(self, player):
         self.x -= self.x_vel
