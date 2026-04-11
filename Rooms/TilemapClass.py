@@ -8,6 +8,7 @@ player_class_path = os.path.join(folder_path, 'Player')
 sys.path.insert(0, player_class_path)
 
 from Player.PlayerClass import *
+from Player.EnemyInit import *
 
 class Tile(pg.sprite.Sprite):
     def __init__(self, x, y, width, height, color):
@@ -29,7 +30,7 @@ class Tile(pg.sprite.Sprite):
         return player.collide_rectDOWN.colliderect(self.rect)
     
     def collideplayer(self):
-        return player.rect.colliderect(self.rect)
+        return player.collrect.colliderect(self.rect)
 
     def collisions(self):
         if self.collideplayer():
@@ -43,7 +44,7 @@ class Tile(pg.sprite.Sprite):
                player.y = self.rect.top - player.height
 
 class TileMap:
-    def __init__(self, tile_size, tile_map, tile_colors):
+    def __init__(self, tile_size, tile_map, tile_colors, enemies_in_room):
         self.tile_size = tile_size
         self.tile_map = tile_map
 
@@ -51,9 +52,12 @@ class TileMap:
 
         self.tile_colors = tile_colors
 
+        self.enemies_in_room = enemies_in_room # 
+
         self.created_tiles = False
 
     def create_tiles(self):
+        print("creating tiles..")
         for row in range(len(self.tile_map)):
             for col in range(len(self.tile_map[row])):
                 tile_type = self.tile_map[row][col]
@@ -64,7 +68,22 @@ class TileMap:
                     color = self.tile_colors[tile_type]
                     tile = Tile(x, y, self.tile_size, self.tile_size, color)
                     self.tiles.add(tile)
+                    print(f"added tile '{tile_type}' at: {x, y} with color: {color} -- {row, col}")
         self.created_tiles = True
+        print("created tiles")
+
+    def spawn_enemies(self):
+        print("adding enemies...")
+        if self.enemies_in_room:
+            for enemy in self.enemies_in_room:
+                for count in enemy['count']:
+                    enemy.x, enemy.y = self.enemies_in_room[enemy]['position'][0],self.enemies_in_room[enemy]['position'][1]
+                    print(f"adding enemy to enemies group: {enemy.name} at {enemy.x, enemy.y}")
+                    enemies.add(enemy)
+        else:
+            print("no enemies to add\n")
+            return
+        print("spawned enemies")
 
     def draw(self, surface):
         self.tiles.draw(surface)
@@ -72,6 +91,7 @@ class TileMap:
     def update(self):
         if not self.created_tiles:
             self.create_tiles()
+            self.spawn_enemies()
 
         for tile in self.tiles:
             if player.collision_rect.colliderect(tile.rect):

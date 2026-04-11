@@ -32,7 +32,8 @@ class Player:
         self.x,self.y = x,y
         self.width,self.height = width,height
 
-        self.rect = pg.Rect(x,y,width,height)
+        self.collrect = pg.Rect(x,y,width,height)
+        self.chaserect = pg.Rect(x,y,width,height)
 
         self.collide_rectUP = pg.Rect(x + width, (y - height), width / 1.3, height)
         self.collide_rectDOWN = pg.Rect(x + width, (y + height), width / 1.3, height) 
@@ -52,6 +53,14 @@ class Player:
         self.right_vel = 0
         self.up_vel = 0
         self.down_vel = 0
+
+        self.x_vel = 0
+        self.y_vel = 0
+
+        self.noise = 0
+
+        self.dash_cooldown = 300
+
     def movement(self):
         self.x -= self.left_vel
         self.x += self.right_vel
@@ -81,9 +90,12 @@ class Player:
         else:
             self.down_vel = max(self.down_vel - 0.2, 0)
 
+    def youre_loud(self):
+        self.noise = ((abs(self.x_vel) + abs(self.y_vel)) * 9.5)
 
     def draw(self,surface):
-        self.rect.topleft = self.x,self.y
+        self.collrect.topleft = self.x,self.y
+        self.chaserect.topleft = self.x, self.y 
         
         self.collide_rectUP.topleft = (self.x + 6.25), (self.y - self.height + 30)
         self.collide_rectDOWN.topleft = (self.x + 6.25), (self.y + self.height - 30)
@@ -93,10 +105,10 @@ class Player:
 
         self.collision_rect.center = self.x + self.width / 2, self.y + self.height / 2
 
-        pg.draw.rect(surface, (200,100,255), (self.rect))
-        pg.draw.rect(surface, (0,0,0), (self.rect), 3)
+        pg.draw.rect(surface, (125,90,100), (self.collrect))
+        # pg.draw.rect(surface, (0,0,0), (self.collrect), 3)
 
-        pg.draw.rect(surface, (100,255,255), (self.collision_rect), 3)
+        # pg.draw.rect(surface, (100,255,255), (self.collision_rect), 3)
 
         # pg.draw.rect(surface, (self.up_colors), (self.collide_rectUP))
         # pg.draw.rect(surface, (self.down_colors), (self.collide_rectDOWN))
@@ -104,14 +116,19 @@ class Player:
         # pg.draw.rect(surface, (self.right_colors), (self.collide_rectRIGHT))
 
     def limits(self):
-        self.x = max(0, min(self.x, 1920 - self.rect.width))
-        self.y = max(0, min(self.y, 1080 - self.rect.height))
+        self.x = max(0, min(self.x, 1920 - self.collrect.width))
+        self.y = max(0, min(self.y, 1080 - self.collrect.height))
 
     def main(self, surface):
         self.movement()
         self.limits()
 
         self.draw(surface)
+
+        self.youre_loud()
+
+        self.x_vel = self.right_vel - self.left_vel
+        self.y_vel = self.up_vel - self.down_vel
         
 player = Player(100, 100, 50,70)
 player_currencies = PlayerCurrency(-1, -5, -1)
