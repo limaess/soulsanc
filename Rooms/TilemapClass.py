@@ -10,6 +10,8 @@ sys.path.insert(0, player_class_path)
 from Player.PlayerClass import *
 from Player.EnemyInit import *
 
+from ConsoleTest import *
+
 class Tile(pg.sprite.Sprite):
     def __init__(self, x, y, width, height, color):
         super().__init__()
@@ -57,7 +59,8 @@ class TileMap:
         self.created_tiles = False
 
     def create_tiles(self):
-        print("creating tiles..")
+        dev_console.input_box.text_history.insert(0, "creating tiles..")
+        dev_console.input_box.text_history.insert(0,"--------------------------")
         for row in range(len(self.tile_map)):
             for col in range(len(self.tile_map[row])):
                 tile_type = self.tile_map[row][col]
@@ -68,23 +71,51 @@ class TileMap:
                     color = self.tile_colors[tile_type]
                     tile = Tile(x, y, self.tile_size, self.tile_size, color)
                     self.tiles.add(tile)
-                    print(f"added tile '{tile_type}' at: {x, y} with color: {color} -- {row, col}")
+                    dev_console.input_box.text_history.insert(0,f"added tile '{tile_type}' at: {x, y} with color: {color} -- {row, col}")
         self.created_tiles = True
-        print("created tiles")
+        dev_console.input_box.text_history.insert(0,"--------------------------")
+        dev_console.input_box.text_history.insert(0, "created tiles")
 
     def spawn_enemies(self):
-        print("adding enemies...")
+        dev_console.input_box.text_history.insert(0, "spawning enemies... \n")
         if self.enemies_in_room:
             for enemy in self.enemies_in_room:
-                for count in enemy['count']:
-                    enemy.x, enemy.y = self.enemies_in_room[enemy]['position'][0],self.enemies_in_room[enemy]['position'][1]
-                    print(f"adding enemy to enemies group: {enemy.name} at {enemy.x, enemy.y}")
-                    enemies.add(enemy)
-        else:
-            print("no enemies to add\n")
-            return
-        print("spawned enemies")
+                enemy_data = self.enemies_in_room[enemy]
+                for count in range(enemy_data['count']):
+                    dev_console.input_box.text_history.insert(0, f"new enemy: {enemy.name}")
+                    dev_console.input_box.text_history.insert(0, "--------------------------")
 
+                    # re-randomize enemy color
+                    dev_console.input_box.text_history.insert(0, "adding enemy color")
+                    enemy_color = (
+                            ((r.randint(enemy.color[0][0], enemy.color[0][1]), # rerandomizing enemy color
+                             r.randint(enemy.color[1][0], enemy.color[1][1]), 
+                             r.randint(enemy.color[2][0], enemy.color[2][1])))
+                    )
+                    dev_console.input_box.text_history.insert(0, f"new enemy color: {enemy_color}")
+
+                    # create new instance of enemy
+                    spawned_enemy = enemy.self_class(enemy.name, (enemy_color), 0,0, enemy.width, enemy.height, 0,0, enemy.accel, enemy.max_vel, 
+                                enemy.lineofsight_size, enemy.target_change_cooldown,enemy.reaction_time,enemy.hearing, enemy.abilities, 
+                                enemy.self_class) 
+
+                    # set its position to the set position in enemies_in_room 
+                    position_index = count % len(enemy_data['position'])
+                    spawned_enemy.x, spawned_enemy.y = enemy_data['position'][position_index][0], enemy_data['position'][position_index][1]
+
+                    dev_console.input_box.text_history.insert(0, f"adding enemy to enemies group : {enemy.name} at {spawned_enemy.x, spawned_enemy.y} - {count}")
+                    dev_console.input_box.text_history.insert(0, "--------------------------")
+
+                    # add to group
+                    enemies.add(spawned_enemy)
+        else:
+            dev_console.input_box.text_history.insert(0, "no enemies to add")
+            return
+        dev_console.input_box.text_history.insert(0, "spawned enemies \n")
+        for enemy in enemies:
+            dev_console.input_box.text_history.insert(0, f"{enemy.name} - {enemy.x, enemy.y}")
+        
+            
     def draw(self, surface):
         self.tiles.draw(surface)
 
@@ -92,6 +123,8 @@ class TileMap:
         if not self.created_tiles:
             self.create_tiles()
             self.spawn_enemies()
+            dev_console.input_box.text_history.insert(0, '')
+
 
         for tile in self.tiles:
             if player.collision_rect.colliderect(tile.rect):

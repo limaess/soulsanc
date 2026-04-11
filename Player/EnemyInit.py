@@ -7,7 +7,7 @@ from EnemiesWithAbilities import *
 enemies = pg.sprite.Group()
 
 default_enemy = Enemy('bad guy', ((50, 130),(0,10), (10,50)),
-                       500, 100, 200, 250, 0, 0, 0.07, 4.3, 850, 850, 500, 2.5, [], Enemy)
+                       500, 100, 200, 250, 0, 0, 0.07       , 4.3, 850, 850, 500, 2.5, [], Enemy)
 quick_enemy = Enemy('gay guy', (((0,50)),((100,200)),((150,255))),
                      500, 400, 150, 200, 0, 0, 0.08, 5, 700, 600, 300, 2, [], Enemy)
 
